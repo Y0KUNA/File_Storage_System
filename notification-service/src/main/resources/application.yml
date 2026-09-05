@@ -1,0 +1,21 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: notification-service
+  datasource:
+    url: ${NOTIFICATION_DATASOURCE_URL:jdbc:postgresql://localhost:5432/notification_db}
+    username: ${NOTIFICATION_DATASOURCE_USERNAME:notification}
+    password: ${NOTIFICATION_DATASOURCE_PASSWORD:notification}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+

@@ -1,0 +1,24 @@
+server:
+  port: 8082
+
+app:
+  internal-token: ${INTERNAL_SERVICE_TOKEN:dev-internal-token}
+
+spring:
+  application:
+    name: filesystem-service
+  datasource:
+    url: ${FILESYSTEM_DATASOURCE_URL:jdbc:postgresql://localhost:5432/filesystem_db}
+    username: ${FILESYSTEM_DATASOURCE_USERNAME:filesystem}
+    password: ${FILESYSTEM_DATASOURCE_PASSWORD:filesystem}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+

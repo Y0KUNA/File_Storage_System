@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="21" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="file-storage-system.api-gateway" options="-parameters" />
+      <module name="file-storage-system.api-gateway.main" options="-parameters" />
+      <module name="file-storage-system.api-gateway.test" options="-parameters" />
+      <module name="file-storage-system.audit-analytics-service" options="-parameters" />
+      <module name="file-storage-system.audit-analytics-service.main" options="-parameters" />
+      <module name="file-storage-system.audit-analytics-service.test" options="-parameters" />
+      <module name="file-storage-system.download-service" options="-parameters" />
+      <module name="file-storage-system.download-service.main" options="-parameters" />
+      <module name="file-storage-system.download-service.test" options="-parameters" />
+      <module name="file-storage-system.filesystem-service" options="-parameters" />
+      <module name="file-storage-system.filesystem-service.main" options="-parameters" />
+      <module name="file-storage-system.filesystem-service.test" options="-parameters" />
+      <module name="file-storage-system.identity-service" options="-parameters" />
+      <module name="file-storage-system.identity-service.main" options="-parameters" />
+      <module name="file-storage-system.identity-service.test" options="-parameters" />
+      <module name="file-storage-system.notification-service" options="-parameters" />
+      <module name="file-storage-system.notification-service.main" options="-parameters" />
+      <module name="file-storage-system.notification-service.test" options="-parameters" />
+      <module name="file-storage-system.upload-service" options="-parameters" />
+      <module name="file-storage-system.upload-service.main" options="-parameters" />
+      <module name="file-storage-system.upload-service.test" options="-parameters" />
+      <module name="file-storage-system.virus-scan-service" options="-parameters" />
+      <module name="file-storage-system.virus-scan-service.main" options="-parameters" />
+      <module name="file-storage-system.virus-scan-service.test" options="-parameters" />
+    </option>
+  </component>
+</project>

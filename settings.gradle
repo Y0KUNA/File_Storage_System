@@ -1,0 +1,26 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'file-storage-system'
+
+include 'common'
+include 'api-gateway'
+include 'identity-service'
+include 'filesystem-service'
+include 'upload-service'
+include 'download-service'
+include 'virus-scan-service'
+include 'notification-service'
+include 'audit-analytics-service'
+

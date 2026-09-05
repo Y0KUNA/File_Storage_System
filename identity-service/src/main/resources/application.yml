@@ -1,0 +1,21 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: identity-service
+  datasource:
+    url: ${IDENTITY_DATASOURCE_URL:jdbc:postgresql://localhost:5432/identity_db}
+    username: ${IDENTITY_DATASOURCE_USERNAME:identity}
+    password: ${IDENTITY_DATASOURCE_PASSWORD:identity}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+

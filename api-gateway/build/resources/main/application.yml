@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: identity-auth
+          uri: ${IDENTITY_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/auth/**,/api/v1/sessions/**,/api/v1/me/**
+          filters:
+            - StripPrefix=2
+        - id: filesystem
+          uri: ${FILESYSTEM_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/folders/**,/api/v1/files/**,/api/v1/resources/**,/api/v1/trash/**,/api/v1/shares/**,/api/v1/share/**,/api/v1/quota
+          filters:
+            - StripPrefix=2
+        - id: upload
+          uri: ${UPLOAD_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/v1/uploads/**
+          filters:
+            - StripPrefix=2
+        - id: download
+          uri: ${DOWNLOAD_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/downloads/**,/api/v1/zip-jobs/**
+          filters:
+            - StripPrefix=2
+        - id: audit
+          uri: ${AUDIT_SERVICE_URL:http://localhost:8087}
+          predicates:
+            - Path=/api/v1/admin/**
+          filters:
+            - StripPrefix=2
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+

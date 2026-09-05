@@ -1,0 +1,26 @@
+server:
+  port: 8084
+
+app:
+  filesystem-url: ${FILESYSTEM_SERVICE_URL:http://localhost:8082}
+  internal-token: ${INTERNAL_SERVICE_TOKEN:dev-internal-token}
+  dev-storage-url: ${DEV_STORAGE_URL:http://localhost:9000/file-storage}
+
+spring:
+  application:
+    name: download-service
+  datasource:
+    url: ${DOWNLOAD_DATASOURCE_URL:jdbc:postgresql://localhost:5432/download_db}
+    username: ${DOWNLOAD_DATASOURCE_USERNAME:download}
+    password: ${DOWNLOAD_DATASOURCE_PASSWORD:download}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
