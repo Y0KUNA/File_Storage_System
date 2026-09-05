@@ -30,3 +30,17 @@ record CreateUploadResponse(
 record ConfirmUploadResponse(UUID fileId, String status, long size) {
 }
 
+record UploadStatusResponse(UUID uploadSessionId, UUID fileId, String status, List<Integer> uploadedParts, List<Integer> missingParts) {
+}
+
+record PresignPartsRequest(List<Integer> partNumbers) {
+}
+
+record PresignPartsResponse(List<PartUploadUrl> parts) {
+}
+
+record CompleteMultipartRequest(List<CompletedPartRequest> parts) {
+}
+
+record CompletedPartRequest(int partNumber, String etag) {
+}

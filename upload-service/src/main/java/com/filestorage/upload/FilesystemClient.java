@@ -3,6 +3,7 @@ package com.filestorage.upload;
 import com.filestorage.common.Headers;
 import com.filestorage.common.dto.CreateInternalFileRequest;
 import com.filestorage.common.dto.InternalFileResponse;
+import com.filestorage.common.dto.ReleaseQuotaRequest;
 import com.filestorage.common.dto.UpdateSizeRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,5 +39,14 @@ class FilesystemClient {
                 .body(new UpdateSizeRequest(size))
                 .retrieve()
                 .body(InternalFileResponse.class);
+    }
+
+    void releaseQuota(UUID fileId) {
+        restClient.post()
+                .uri("/internal/quota/release")
+                .header(Headers.INTERNAL_TOKEN, internalToken)
+                .body(new ReleaseQuotaRequest(fileId))
+                .retrieve()
+                .toBodilessEntity();
     }
 }

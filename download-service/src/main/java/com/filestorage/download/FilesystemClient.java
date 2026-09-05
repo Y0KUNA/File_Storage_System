@@ -2,6 +2,7 @@ package com.filestorage.download;
 
 import com.filestorage.common.Headers;
 import com.filestorage.common.dto.AccessCheckResponse;
+import com.filestorage.common.dto.FolderArchiveResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -27,5 +28,12 @@ class FilesystemClient {
                 .retrieve()
                 .body(AccessCheckResponse.class);
     }
-}
 
+    FolderArchiveResponse archiveManifest(UUID folderId, UUID userId) {
+        return restClient.get()
+                .uri(uri -> uri.path("/internal/folders/{id}/archive").queryParam("userId", userId).build(folderId))
+                .header(Headers.INTERNAL_TOKEN, internalToken)
+                .retrieve()
+                .body(FolderArchiveResponse.class);
+    }
+}

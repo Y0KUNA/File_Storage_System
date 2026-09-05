@@ -61,6 +61,7 @@ services:
       UPLOAD_SERVICE_URL: http://upload-service:8083
       DOWNLOAD_SERVICE_URL: http://download-service:8084
       AUDIT_SERVICE_URL: http://audit-analytics-service:8087
+      JWT_JWK_SET_URI: http://identity-service:8081/.well-known/jwks.json
     ports:
       - "8080:8080"
     depends_on:
@@ -79,9 +80,12 @@ services:
       IDENTITY_DATASOURCE_URL: jdbc:postgresql://postgres:5432/identity_db
       IDENTITY_DATASOURCE_USERNAME: identity
       IDENTITY_DATASOURCE_PASSWORD: identity
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       postgres:
         condition: service_healthy
+      kafka:
+        condition: service_started
 
   filesystem-service:
     build:
@@ -93,9 +97,12 @@ services:
       FILESYSTEM_DATASOURCE_USERNAME: filesystem
       FILESYSTEM_DATASOURCE_PASSWORD: filesystem
       INTERNAL_SERVICE_TOKEN: dev-internal-token
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       postgres:
         condition: service_healthy
+      kafka:
+        condition: service_started
 
   upload-service:
     build:
@@ -108,11 +115,19 @@ services:
       UPLOAD_DATASOURCE_PASSWORD: upload
       FILESYSTEM_SERVICE_URL: http://filesystem-service:8082
       INTERNAL_SERVICE_TOKEN: dev-internal-token
-      DEV_STORAGE_URL: http://minio:9000/file-storage
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+      MINIO_BUCKET: file-storage
     depends_on:
       postgres:
         condition: service_healthy
       filesystem-service:
+        condition: service_started
+      kafka:
+        condition: service_started
+      minio:
         condition: service_started
 
   download-service:
@@ -126,11 +141,19 @@ services:
       DOWNLOAD_DATASOURCE_PASSWORD: download
       FILESYSTEM_SERVICE_URL: http://filesystem-service:8082
       INTERNAL_SERVICE_TOKEN: dev-internal-token
-      DEV_STORAGE_URL: http://minio:9000/file-storage
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+      MINIO_BUCKET: file-storage
     depends_on:
       postgres:
         condition: service_healthy
       filesystem-service:
+        condition: service_started
+      kafka:
+        condition: service_started
+      minio:
         condition: service_started
 
   virus-scan-service:
@@ -141,9 +164,18 @@ services:
     environment:
       FILESYSTEM_SERVICE_URL: http://filesystem-service:8082
       INTERNAL_SERVICE_TOKEN: dev-internal-token
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      REDIS_HOST: redis
+      CLAMAV_HOST: clamav
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+      MINIO_BUCKET: file-storage
     depends_on:
       - filesystem-service
+      - kafka
       - redis
+      - minio
       - clamav
 
   notification-service:
@@ -155,10 +187,14 @@ services:
       NOTIFICATION_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notification_db
       NOTIFICATION_DATASOURCE_USERNAME: notification
       NOTIFICATION_DATASOURCE_PASSWORD: notification
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      REDIS_HOST: redis
     depends_on:
       postgres:
         condition: service_healthy
       kafka:
+        condition: service_started
+      redis:
         condition: service_started
 
   audit-analytics-service:
@@ -170,9 +206,12 @@ services:
       AUDIT_DATASOURCE_URL: jdbc:postgresql://postgres:5432/audit_analytics_db
       AUDIT_DATASOURCE_USERNAME: audit
       AUDIT_DATASOURCE_PASSWORD: audit
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      REDIS_HOST: redis
     depends_on:
       postgres:
         condition: service_healthy
       kafka:
         condition: service_started
-
+      redis:
+        condition: service_started

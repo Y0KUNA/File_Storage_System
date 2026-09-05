@@ -4,14 +4,42 @@ server:
 app:
   filesystem-url: ${FILESYSTEM_SERVICE_URL:http://localhost:8082}
   internal-token: ${INTERNAL_SERVICE_TOKEN:dev-internal-token}
+  kafka:
+    events-topic: ${KAFKA_EVENTS_TOPIC:file-storage.events}
+    dlq-suffix: ${KAFKA_DLQ_SUFFIX:.DLQ}
+    dedupe-ttl-hours: ${KAFKA_DEDUPE_TTL_HOURS:72}
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+    access-key: ${MINIO_ACCESS_KEY:minio}
+    secret-key: ${MINIO_SECRET_KEY:minio123}
+    bucket: ${MINIO_BUCKET:file-storage}
+  clamav:
+    host: ${CLAMAV_HOST:localhost}
+    port: ${CLAMAV_PORT:3310}
+    chunk-size: ${CLAMAV_CHUNK_SIZE:8192}
 
 spring:
   application:
     name: virus-scan-service
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: virus-scan-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.filestorage.common
+        spring.json.value.default.type: com.filestorage.common.EventEnvelope
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info,metrics
-

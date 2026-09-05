@@ -33,6 +33,14 @@ docker compose up --build
 
 The gateway listens on `http://localhost:8080`.
 
+Run the frontend in a second terminal:
+
+```powershell
+node frontend/server.mjs
+```
+
+The web app listens on `http://localhost:5173` and calls the gateway at `http://localhost:8080/api/v1`.
+
 ## Progress
 
 Implementation progress is tracked in [docs/09-implementation-plan.md](docs/09-implementation-plan.md).

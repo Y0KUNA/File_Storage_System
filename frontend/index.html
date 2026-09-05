@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>File Storage</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div>
+            <strong>File Storage</strong>
+            <small id="connection-label">Gateway localhost</small>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Primary">
+          <button class="nav-item active" data-view="files" title="Files">
+            <span class="icon">F</span>
+            <span>Files</span>
+          </button>
+          <button class="nav-item" data-view="trash" title="Trash">
+            <span class="icon">T</span>
+            <span>Trash</span>
+          </button>
+          <button class="nav-item" data-view="notifications" title="Notifications">
+            <span class="icon">N</span>
+            <span>Notifications</span>
+          </button>
+          <button class="nav-item" data-view="admin" title="Admin metrics">
+            <span class="icon">A</span>
+            <span>Admin</span>
+          </button>
+        </nav>
+
+        <section class="quota-panel">
+          <div class="quota-row">
+            <span>Storage</span>
+            <strong id="quota-percent">0%</strong>
+          </div>
+          <div class="meter"><span id="quota-meter"></span></div>
+          <small id="quota-text">No quota loaded</small>
+        </section>
+
+        <div class="session-panel">
+          <div id="user-summary">Not signed in</div>
+          <button id="logout-button" class="ghost-button" type="button">Logout</button>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <section id="auth-view" class="auth-view">
+          <div class="auth-visual" aria-hidden="true">
+            <div class="stack stack-a"></div>
+            <div class="stack stack-b"></div>
+            <div class="stack stack-c"></div>
+          </div>
+          <form id="auth-form" class="auth-form">
+            <div class="form-head">
+              <h1>File Storage</h1>
+              <p>A secure workspace for team files.</p>
+            </div>
+            <label>
+              Email
+              <input id="email-input" type="email" autocomplete="email" required value="demo@example.com">
+            </label>
+            <label>
+              Password
+              <input id="password-input" type="password" autocomplete="current-password" required value="password123">
+            </label>
+            <label>
+              Display name
+              <input id="display-name-input" type="text" autocomplete="name" value="Demo User">
+            </label>
+            <div class="auth-actions">
+              <button id="login-button" class="primary-button" type="submit">Login</button>
+              <button id="register-button" class="secondary-button" type="button">Register</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="app-view" class="app-view hidden">
+          <header class="topbar">
+            <div>
+              <div id="breadcrumbs" class="breadcrumbs"></div>
+              <h2 id="view-title">Files</h2>
+            </div>
+            <div class="toolbar">
+              <button id="refresh-button" class="icon-button" type="button" title="Refresh">R</button>
+              <button id="new-folder-button" class="secondary-button" type="button">New Folder</button>
+              <label class="primary-button file-picker">
+                Upload
+                <input id="file-input" type="file">
+              </label>
+            </div>
+          </header>
+
+          <section id="files-view" class="content-view">
+            <div class="content-grid">
+              <section class="table-panel">
+                <div class="table-head">
+                  <span>Name</span>
+                  <span>Size</span>
+                  <span>Status</span>
+                  <span></span>
+                </div>
+                <div id="file-list" class="file-list"></div>
+              </section>
+
+              <aside class="activity-panel">
+                <h3>Transfer Queue</h3>
+                <div id="transfer-list" class="activity-list"></div>
+              </aside>
+            </div>
+          </section>
+
+          <section id="trash-view" class="content-view hidden">
+            <div id="trash-list" class="simple-list"></div>
+          </section>
+
+          <section id="notifications-view" class="content-view hidden">
+            <div id="notification-list" class="simple-list"></div>
+          </section>
+
+          <section id="admin-view" class="content-view hidden">
+            <div class="metrics-toolbar">
+              <select id="metric-type">
+                <option value="EVENT_TOTAL">EVENT_TOTAL</option>
+                <option value="FILE_UPLOAD_STORED">FILE_UPLOAD_STORED</option>
+                <option value="FILE_UPLOAD_COMPLETED">FILE_UPLOAD_COMPLETED</option>
+                <option value="FILE_DOWNLOAD_REQUESTED">FILE_DOWNLOAD_REQUESTED</option>
+                <option value="ZIP_READY">ZIP_READY</option>
+              </select>
+              <button id="load-metrics-button" class="secondary-button" type="button">Load Metrics</button>
+            </div>
+            <div id="metrics-list" class="metrics-list"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast hidden" role="status"></div>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

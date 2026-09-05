@@ -12,7 +12,13 @@ record RegisterRequest(@Email @NotBlank String email, @Size(min = 8) String pass
 record LoginRequest(@Email @NotBlank String email, @NotBlank String password) {
 }
 
-record AuthResponse(UUID userId, String role, String accessToken, String refreshToken) {
+record RefreshTokenRequest(@NotBlank String refreshToken) {
+}
+
+record LogoutRequest(@NotBlank String refreshToken) {
+}
+
+record AuthResponse(UUID userId, String role, String accessToken, String refreshToken, UUID sessionId) {
 }
 
 record RegisterResponse(UUID userId, String role) {
@@ -26,4 +32,3 @@ record UpdateProfileRequest(String displayName) {
 
 record TokenResponse(String accessToken, String refreshToken) {
 }
-

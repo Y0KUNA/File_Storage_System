@@ -26,7 +26,7 @@
 - [x] Tạo API đăng ký/login/refresh/logout/me/session/reset-password dạng MVP.
 - [x] Thêm model user/session/token-version theo tài liệu.
 - [x] Phát event `USER_REGISTERED` qua publisher abstraction.
-- [ ] Hoàn thiện JWT RS256 thật, refresh token hash và revoke session bền vững trong DB.
+- [x] Hoàn thiện JWT RS256 thật, refresh token hash và revoke session bền vững trong DB.
 - [ ] Thêm Flyway migration chi tiết cho `identity_db`.
 
 ### Phase 3 — Filesystem service
@@ -42,21 +42,21 @@
 - [x] Tạo `POST /uploads` tách SINGLE/MULTIPART theo threshold.
 - [x] Tạo `POST /uploads/{fileId}/confirm` cho single-file, gọi filesystem internal client.
 - [x] Tạo DTO/session model cho multipart scaffold.
-- [ ] Nối MinIO SDK thật cho presigned PUT, statObject, multipart, abort TTL.
-- [ ] Publish `FILE_UPLOAD_STORED` vào Kafka sau confirm/complete.
+- [x] Nối MinIO SDK thật cho presigned PUT, statObject, multipart compose-object và abort TTL.
+- [x] Publish `FILE_UPLOAD_STORED` vào Kafka sau confirm/complete.
 
 ### Phase 5 — Download service
 - [x] Tạo API presigned download URL scaffold.
 - [x] Tạo ZIP job API scaffold.
-- [ ] Nối MinIO SDK thật cho presigned GET và ZIP streaming.
-- [ ] Publish `FILE_DOWNLOAD_REQUESTED`, `ZIP_REQUESTED`, `ZIP_READY`.
+- [x] Nối MinIO SDK thật cho presigned GET và ZIP streaming.
+- [x] Publish `FILE_DOWNLOAD_REQUESTED`, `ZIP_REQUESTED`, `ZIP_READY`.
 
 ### Phase 6 — Async services
 - [x] Tạo `virus-scan-service` consumer/service scaffold, checksum + scan abstraction.
 - [x] Tạo `notification-service` consumer/storage scaffold.
 - [x] Tạo `audit-analytics-service` metrics endpoint scaffold.
-- [ ] Nối Kafka consumer/producer thật, retry/DLQ và Redis dedupe.
-- [ ] Nối ClamAV INSTREAM thật.
+- [x] Nối Kafka consumer/producer thật, retry/DLQ và Redis dedupe.
+- [x] Nối ClamAV INSTREAM thật.
 - [ ] Thêm outbox relay cho `identity-service` và `filesystem-service`.
 
 ### Phase 7 — Kiểm thử và hoàn thiện
@@ -66,8 +66,14 @@
 - [ ] Chạy build/test toàn repo bằng Gradle.
 - [ ] Chạy Docker Compose end-to-end.
 
+### Phase 8 — Frontend MVP
+- [x] Tạo SPA tĩnh trong `frontend/` với login/register, file browser, create folder, upload single/multipart, download, ZIP folder, Trash, notifications và admin metrics.
+- [x] Thêm frontend dev server Node không cần dependency ngoài.
+- [x] Cấu hình CORS gateway cho frontend `localhost:5173`.
+- [ ] Kiểm thử end-to-end với Docker Compose đang chạy đủ hạ tầng/service.
+
 ## 3. Trạng thái hiện tại
 - Ngày cập nhật: 2026-09-05.
-- Trạng thái: đã dựng nền ứng dụng và skeleton MVP theo tài liệu; `filesystem-service` đã có luồng Trash/restore/purge MVP. Các tích hợp hạ tầng nặng như MinIO/Kafka/ClamAV/Flyway chi tiết còn ở backlog.
+- Trạng thái: đã dựng nền ứng dụng, các tích hợp backend chính của MVP và frontend SPA đầu tiên. Backend đã có JWT RS256/session refresh bền vững, Trash/restore/purge, MinIO upload/download/ZIP, Kafka events với retry/DLQ/Redis dedupe, và ClamAV INSTREAM. Flyway chi tiết, outbox relay và E2E Docker Compose còn ở backlog.
 - Ghi chú môi trường: Gradle Wrapper đã chạy được sau khi cho phép tải Gradle distribution; dự án vẫn target Java 21 theo tài liệu.
-- Kiểm tra đã chạy: `rg --files`, `rg "dev-|placeholder|TODO|FIXME|ddl-auto"`, `git status --short`, `./gradlew.bat :filesystem-service:compileJava`.
+- Kiểm tra đã chạy: `rg --files`, `rg "dev-|placeholder|TODO|FIXME|ddl-auto"`, `git status --short`, `./gradlew.bat :filesystem-service:compileJava`, `./gradlew.bat --no-daemon compileJava`, `docker-compose config`, `node --check frontend/app.js`, `node --check frontend/server.mjs`, HTTP 200 cho `http://localhost:5173`.

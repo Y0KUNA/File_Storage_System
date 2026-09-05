@@ -1,10 +1,13 @@
 package com.filestorage.filesystem;
 
+import com.filestorage.common.EventEnvelope;
 import com.filestorage.common.FileStatus;
 import com.filestorage.common.ResourceType;
 import com.filestorage.common.dto.AccessCheckResponse;
 import com.filestorage.common.dto.ActivateFileRequest;
+import com.filestorage.common.dto.ArchiveFileItem;
 import com.filestorage.common.dto.CreateInternalFileRequest;
+import com.filestorage.common.dto.FolderArchiveResponse;
 import com.filestorage.common.dto.InternalFileResponse;
 import com.filestorage.common.dto.RejectFileRequest;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -23,12 +29,18 @@ class FilesystemService {
     private final FileRepository files;
     private final StorageQuotaRepository quotas;
     private final TrashItemRepository trashItems;
+    private final DomainEventPublisher publisher;
 
-    FilesystemService(FolderRepository folders, FileRepository files, StorageQuotaRepository quotas, TrashItemRepository trashItems) {
+    FilesystemService(FolderRepository folders,
+                      FileRepository files,
+                      StorageQuotaRepository quotas,
+                      TrashItemRepository trashItems,
+                      DomainEventPublisher publisher) {
         this.folders = folders;
         this.files = files;
         this.quotas = quotas;
         this.trashItems = trashItems;
+        this.publisher = publisher;
     }
 
     @Transactional
@@ -131,6 +143,19 @@ class FilesystemService {
         file.status = FileStatus.ACTIVE;
         file.checksum = request.checksum();
         file.updatedAt = Instant.now();
+        publisher.publish(EventEnvelope.v1(
+                "FILE_UPLOAD_COMPLETED",
+                "FILE",
+                file.id.toString(),
+                null,
+                Map.of(
+                        "fileId", file.id.toString(),
+                        "ownerId", file.ownerId.toString(),
+                        "size", file.size,
+                        "mimeType", file.mimeType,
+                        "checksum", file.checksum
+                )
+        ));
         return internalFile(file);
     }
 
@@ -142,6 +167,13 @@ class FilesystemService {
         quota.currentUsageBytes = Math.max(0, quota.currentUsageBytes - file.size);
         quota.updatedAt = Instant.now();
         files.delete(file);
+        publisher.publish(EventEnvelope.v1(
+                "FILE_INFECTED",
+                "FILE",
+                file.id.toString(),
+                null,
+                Map.of("fileId", file.id.toString(), "ownerId", file.ownerId.toString())
+        ));
     }
 
     AccessCheckResponse accessCheck(UUID fileId, UUID userId) {
@@ -151,6 +183,16 @@ class FilesystemService {
                 && !trashItems.existsByResourceIdAndResourceType(file.id, ResourceType.FILE)
                 && !isFolderTrashed(findOwnedFolder(file.ownerId, file.parentFolderId));
         return new AccessCheckResponse(allowed, file.id, file.ownerId, file.storageKey, file.size);
+    }
+
+    FolderArchiveResponse archiveManifest(UUID userId, UUID folderId) {
+        FolderNode folder = findOwnedFolder(userId, folderId);
+        if (isFolderTrashed(folder)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "FOLDER_NOT_FOUND");
+        }
+        List<ArchiveFileItem> manifest = new ArrayList<>();
+        collectActiveFiles(userId, folderId, "", manifest);
+        return new FolderArchiveResponse(folderId, manifest);
     }
 
     @Transactional
@@ -283,6 +325,16 @@ class FilesystemService {
                 .mapToLong(child -> folderTreeSize(userId, child.id))
                 .sum();
         return directFileSize + childFolderSize;
+    }
+
+    private void collectActiveFiles(UUID userId, UUID folderId, String prefix, List<ArchiveFileItem> manifest) {
+        files.findByOwnerIdAndParentFolderId(userId, folderId).stream()
+                .filter(file -> file.status == FileStatus.ACTIVE)
+                .filter(file -> !trashItems.existsByResourceIdAndResourceType(file.id, ResourceType.FILE))
+                .forEach(file -> manifest.add(new ArchiveFileItem(file.id, prefix + file.name, file.storageKey, file.size)));
+        folders.findByOwnerIdAndParentId(userId, folderId).stream()
+                .filter(folder -> !trashItems.existsByResourceIdAndResourceType(folder.id, ResourceType.FOLDER))
+                .forEach(folder -> collectActiveFiles(userId, folder.id, prefix + folder.name + "/", manifest));
     }
 
     private void deleteChildTrashMarkers(UUID userId, UUID folderId) {

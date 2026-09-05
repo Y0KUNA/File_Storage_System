@@ -28,5 +28,28 @@ class UploadController {
     ConfirmUploadResponse confirm(@PathVariable UUID fileId) {
         return service.confirm(fileId);
     }
-}
 
+    @GetMapping("/{uploadSessionId}")
+    UploadStatusResponse status(@PathVariable UUID uploadSessionId) {
+        return service.status(uploadSessionId);
+    }
+
+    @PostMapping("/{uploadSessionId}/parts/presign")
+    PresignPartsResponse presignParts(@PathVariable UUID uploadSessionId,
+                                      @RequestBody PresignPartsRequest request) {
+        return service.presignParts(uploadSessionId, request);
+    }
+
+    @PostMapping("/{uploadSessionId}/complete")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    ConfirmUploadResponse complete(@PathVariable UUID uploadSessionId,
+                                   @RequestBody CompleteMultipartRequest request) {
+        return service.complete(uploadSessionId, request);
+    }
+
+    @DeleteMapping("/{uploadSessionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void abort(@PathVariable UUID uploadSessionId) {
+        service.abort(uploadSessionId);
+    }
+}

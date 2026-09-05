@@ -3,6 +3,8 @@ server:
 
 app:
   internal-token: ${INTERNAL_SERVICE_TOKEN:dev-internal-token}
+  kafka:
+    events-topic: ${KAFKA_EVENTS_TOPIC:file-storage.events}
 
 spring:
   application:
@@ -15,10 +17,21 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: filesystem-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.filestorage.common
+        spring.json.value.default.type: com.filestorage.common.EventEnvelope
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info,metrics
-

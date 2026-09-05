@@ -1,6 +1,15 @@
 server:
   port: 8081
 
+app:
+  kafka:
+    events-topic: ${KAFKA_EVENTS_TOPIC:file-storage.events}
+  jwt:
+    issuer: ${JWT_ISSUER:file-storage-identity}
+    access-token-ttl-seconds: ${JWT_ACCESS_TOKEN_TTL_SECONDS:900}
+    public-key-pem: ${JWT_PUBLIC_KEY_PEM:}
+    private-key-pem: ${JWT_PRIVATE_KEY_PEM:}
+
 spring:
   application:
     name: identity-service
@@ -12,10 +21,14 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info,metrics
-

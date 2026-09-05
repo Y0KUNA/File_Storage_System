@@ -1,13 +1,11 @@
 package com.filestorage.upload;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-@Component
 class DevObjectStorageGateway implements ObjectStorageGateway {
     private final String publicBaseUrl;
 
@@ -28,5 +26,18 @@ class DevObjectStorageGateway implements ObjectStorageGateway {
     public long statObjectSize(String storageKey) {
         return 1L;
     }
-}
 
+    @Override
+    public PresignedPut presignPart(String storageKey, int partNumber) {
+        return presignPut(storageKey + ".part" + partNumber);
+    }
+
+    @Override
+    public long completeMultipart(String storageKey, int totalParts) {
+        return totalParts;
+    }
+
+    @Override
+    public void abortMultipart(String storageKey, int totalParts) {
+    }
+}

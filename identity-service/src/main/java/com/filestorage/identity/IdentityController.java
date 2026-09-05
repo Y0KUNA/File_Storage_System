@@ -23,23 +23,27 @@ class IdentityController {
     }
 
     @PostMapping("/auth/login")
-    AuthResponse login(@Valid @RequestBody LoginRequest request) {
-        return service.login(request);
+    AuthResponse login(@RequestHeader(value = "User-Agent", required = false) String userAgent,
+                       @RequestHeader(value = "X-Forwarded-For", required = false) String forwardedFor,
+                       @Valid @RequestBody LoginRequest request) {
+        return service.login(request, userAgent, forwardedFor);
     }
 
     @PostMapping("/auth/refresh")
-    TokenResponse refresh() {
-        return new TokenResponse("dev-access-token-refreshed", "dev-refresh-token-rotated");
+    TokenResponse refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        return service.refresh(request);
     }
 
     @PostMapping("/auth/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void logout() {
+    void logout(@Valid @RequestBody LogoutRequest request) {
+        service.logout(request);
     }
 
     @PostMapping("/auth/logout-all")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void logoutAll() {
+    void logoutAll(@RequestHeader(Headers.USER_ID) UUID userId) {
+        service.logoutAll(userId);
     }
 
     @PostMapping("/auth/forgot-password")
@@ -63,4 +67,3 @@ class IdentityController {
         return service.updateProfile(userId, request);
     }
 }
-
