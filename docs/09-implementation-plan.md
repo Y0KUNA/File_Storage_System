@@ -34,7 +34,7 @@
 - [x] Tạo internal API `POST /internal/files`, `PATCH /internal/files/{id}/size`, `/activate`, `/reject`, access-check.
 - [x] Implement quota reservation/release atomic ở service layer MVP.
 - [x] Implement auto-suffix khi trùng tên.
-- [ ] Thêm Trash/restore/purge đầy đủ.
+- [x] Thêm Trash/restore/purge MVP cho file/folder, gồm soft-delete, list trash, restore và purge giải phóng quota.
 - [ ] Thêm ShareLink PUBLIC/PRIVATE với ancestor inheritance và Redis lockout.
 - [ ] Thêm Flyway migration chi tiết cho `filesystem_db`.
 
@@ -68,6 +68,6 @@
 
 ## 3. Trạng thái hiện tại
 - Ngày cập nhật: 2026-09-05.
-- Trạng thái: đã dựng nền ứng dụng và skeleton MVP theo tài liệu; các tích hợp hạ tầng nặng như MinIO/Kafka/ClamAV/Flyway chi tiết còn ở backlog.
-- Ghi chú môi trường: máy hiện có Java 19, chưa có `gradle` hoặc `mvn` trong PATH. Dự án target Java 21 theo tài liệu, nên bước build/test local cần cài JDK 21 và Gradle hoặc thêm Gradle Wrapper.
-- Kiểm tra đã chạy: `rg --files`, `rg "dev-|placeholder|TODO|FIXME|ddl-auto"`, `git status --short`.
+- Trạng thái: đã dựng nền ứng dụng và skeleton MVP theo tài liệu; `filesystem-service` đã có luồng Trash/restore/purge MVP. Các tích hợp hạ tầng nặng như MinIO/Kafka/ClamAV/Flyway chi tiết còn ở backlog.
+- Ghi chú môi trường: Gradle Wrapper đã chạy được sau khi cho phép tải Gradle distribution; dự án vẫn target Java 21 theo tài liệu.
+- Kiểm tra đã chạy: `rg --files`, `rg "dev-|placeholder|TODO|FIXME|ddl-auto"`, `git status --short`, `./gradlew.bat :filesystem-service:compileJava`.

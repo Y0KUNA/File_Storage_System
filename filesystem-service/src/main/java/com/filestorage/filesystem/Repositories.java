@@ -23,3 +23,10 @@ interface FileRepository extends JpaRepository<StoredFile, UUID> {
 interface StorageQuotaRepository extends JpaRepository<StorageQuota, UUID> {
 }
 
+interface TrashItemRepository extends JpaRepository<TrashItem, UUID> {
+    List<TrashItem> findByOwnerIdOrderByTrashedAtDesc(UUID ownerId);
+
+    Optional<TrashItem> findByOwnerIdAndResourceIdAndResourceType(UUID ownerId, UUID resourceId, com.filestorage.common.ResourceType resourceType);
+
+    boolean existsByResourceIdAndResourceType(UUID resourceId, com.filestorage.common.ResourceType resourceType);
+}
