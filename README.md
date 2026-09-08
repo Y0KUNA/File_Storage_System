@@ -20,6 +20,9 @@ The project is Gradle-based and targets Java 21:
 ```powershell
 gradle clean build
 ```
+```cmd
+./gradlew build -x test    
+```
 
 This machine currently does not have `gradle`/`mvn` in `PATH`; install Gradle or add a Gradle Wrapper before running the command locally.
 

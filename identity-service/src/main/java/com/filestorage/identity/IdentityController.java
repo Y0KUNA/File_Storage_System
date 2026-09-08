@@ -26,6 +26,7 @@ class IdentityController {
     AuthResponse login(@RequestHeader(value = "User-Agent", required = false) String userAgent,
                        @RequestHeader(value = "X-Forwarded-For", required = false) String forwardedFor,
                        @Valid @RequestBody LoginRequest request) {
+                    System.out.println(">>> [DEBUG CONTROLLER] LOGIN CALLED");
         return service.login(request, userAgent, forwardedFor);
     }
 

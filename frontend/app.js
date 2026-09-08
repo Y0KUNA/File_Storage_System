@@ -284,6 +284,7 @@ async function uploadFile(file) {
       mimeType: file.type || "application/octet-stream"
     })
   });
+  console.log(">>> DEBUG create response:", create);
   if (create.mode === "SINGLE") {
     await putObject(create.uploadUrl, file, transfer);
     await api(`/uploads/${create.fileId}/confirm`, { method: "POST", body: "{}" });
