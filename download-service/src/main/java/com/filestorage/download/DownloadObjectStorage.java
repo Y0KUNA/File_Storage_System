@@ -8,6 +8,8 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.http.Method;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.http.HttpStatus;
@@ -22,15 +24,23 @@ import java.util.zip.ZipOutputStream;
 
 @Component
 class DownloadObjectStorage {
-    private final MinioClient minio;
+
+    private final MinioClient privateMinio;
+    private final MinioClient publicMinio;
+
     private final String bucket;
     private final int presignExpiryMinutes;
+
     private volatile boolean bucketReady;
 
-    DownloadObjectStorage(MinioClient minio,
-                          @Value("${app.minio.bucket:file-storage}") String bucket,
-                          @Value("${app.minio.presign-expiry-minutes:15}") int presignExpiryMinutes) {
-        this.minio = minio;
+    DownloadObjectStorage(
+            @Qualifier("minioClient") MinioClient privateMinio,
+            @Qualifier("publicMinioClient") MinioClient publicMinio,
+            @Value("${app.minio.bucket:file-storage}") String bucket,
+            @Value("${app.minio.presign-expiry-minutes:15}") int presignExpiryMinutes) {
+
+        this.privateMinio = privateMinio;
+        this.publicMinio = publicMinio;
         this.bucket = bucket;
         this.presignExpiryMinutes = presignExpiryMinutes;
     }
@@ -38,7 +48,7 @@ class DownloadObjectStorage {
     PresignedGet presignGet(String storageKey) {
         ensureBucket();
         try {
-            String url = minio.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+            String url = publicMinio.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
                     .bucket(bucket)
                     .object(storageKey)
                     .method(Method.GET)
@@ -52,7 +62,7 @@ class DownloadObjectStorage {
 
     void writeZipEntry(ZipOutputStream zip, ArchiveFileItem item) {
         ensureBucket();
-        try (InputStream input = minio.getObject(GetObjectArgs.builder()
+        try (InputStream input = privateMinio.getObject(GetObjectArgs.builder()
                 .bucket(bucket)
                 .object(item.storageKey())
                 .build())) {
@@ -67,7 +77,7 @@ class DownloadObjectStorage {
     void putObject(String storageKey, InputStream input, long size, String contentType) {
         ensureBucket();
         try {
-            minio.putObject(PutObjectArgs.builder()
+            privateMinio.putObject(PutObjectArgs.builder()
                     .bucket(bucket)
                     .object(storageKey)
                     .stream(input, size, -1)
@@ -87,9 +97,9 @@ class DownloadObjectStorage {
                 return;
             }
             try {
-                boolean exists = minio.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+                boolean exists = privateMinio.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
                 if (!exists) {
-                    minio.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+                    privateMinio.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
                 }
                 bucketReady = true;
             } catch (Exception ex) {

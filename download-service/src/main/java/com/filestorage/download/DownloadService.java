@@ -23,7 +23,8 @@ class DownloadService {
     private final ZipJobRepository zipJobs;
     private final DomainEventPublisher publisher;
 
-    DownloadService(FilesystemClient filesystem, DownloadObjectStorage objectStorage, ZipJobRepository zipJobs, DomainEventPublisher publisher) {
+    DownloadService(FilesystemClient filesystem, DownloadObjectStorage objectStorage, ZipJobRepository zipJobs,
+            DomainEventPublisher publisher) {
         this.filesystem = filesystem;
         this.objectStorage = objectStorage;
         this.zipJobs = zipJobs;
@@ -31,7 +32,12 @@ class DownloadService {
     }
 
     DownloadUrlResponse fileUrl(UUID userId, UUID fileId) {
+        System.out.println(">>> DOWNLOAD SERVICE HIT");
+        System.out.println(">>> userId = " + userId);
+        System.out.println(">>> fileId = " + fileId);
         AccessCheckResponse access = filesystem.accessCheck(fileId, userId);
+        System.out.println(">>> ACCESS ALLOWED = " + access.allowed());
+        System.out.println(">>> STORAGE KEY = " + access.storageKey());
         if (!access.allowed()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "DOWNLOAD_NOT_ALLOWED");
         }
@@ -40,8 +46,7 @@ class DownloadService {
                 "FILE",
                 fileId.toString(),
                 null,
-                Map.of("fileId", fileId.toString(), "ownerId", userId.toString(), "viaShare", false)
-        ));
+                Map.of("fileId", fileId.toString(), "ownerId", userId.toString(), "viaShare", false)));
         PresignedGet get = objectStorage.presignGet(access.storageKey());
         return new DownloadUrlResponse(get.url(), get.expiresAt(), true);
     }
@@ -54,8 +59,7 @@ class DownloadService {
                 "FOLDER",
                 folderId.toString(),
                 null,
-                Map.of("jobId", job.id.toString(), "folderId", folderId.toString(), "ownerId", userId.toString())
-        ));
+                Map.of("jobId", job.id.toString(), "folderId", folderId.toString(), "ownerId", userId.toString())));
         processZip(job);
         return toResponse(job);
     }
@@ -102,8 +106,8 @@ class DownloadService {
                     "ZIP_JOB",
                     job.id.toString(),
                     null,
-                    Map.of("jobId", job.id.toString(), "folderId", job.folderId.toString(), "ownerId", job.requestedBy.toString())
-            ));
+                    Map.of("jobId", job.id.toString(), "folderId", job.folderId.toString(), "ownerId",
+                            job.requestedBy.toString())));
         } catch (Exception ex) {
             job.status = ZipJobStatus.FAILED;
             job.errorMessage = ex.getMessage();
@@ -113,8 +117,8 @@ class DownloadService {
                     "ZIP_JOB",
                     job.id.toString(),
                     null,
-                    Map.of("jobId", job.id.toString(), "folderId", job.folderId.toString(), "ownerId", job.requestedBy.toString())
-            ));
+                    Map.of("jobId", job.id.toString(), "folderId", job.folderId.toString(), "ownerId",
+                            job.requestedBy.toString())));
         }
     }
 }

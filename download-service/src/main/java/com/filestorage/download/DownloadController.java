@@ -16,12 +16,16 @@ class DownloadController {
 
     @PostMapping("/downloads/files/{id}/url")
     DownloadUrlResponse fileUrl(@RequestHeader(Headers.USER_ID) UUID userId, @PathVariable UUID id) {
+        System.out.println(">>> CONTROLLER HIT");
+        System.out.println(">>> userId = " + userId);
+        System.out.println(">>> fileId = " + id);
         return service.fileUrl(userId, id);
     }
 
     @PostMapping("/downloads/folders/{id}/zip-jobs")
     @ResponseStatus(HttpStatus.ACCEPTED)
     ZipJobResponse requestZip(@RequestHeader(Headers.USER_ID) UUID userId, @PathVariable UUID id) {
+        
         return service.requestZip(userId, id);
     }
 

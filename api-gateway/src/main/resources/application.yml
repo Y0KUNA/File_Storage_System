@@ -39,7 +39,8 @@ spring:
             - Path=/api/v1/admin/**
           filters:
             - StripPrefix=2
-
+  internal:
+    token: ${INTERNAL_TOKEN}
 management:
   endpoints:
     web:

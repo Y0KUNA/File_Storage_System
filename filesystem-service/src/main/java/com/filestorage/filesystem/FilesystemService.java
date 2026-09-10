@@ -179,7 +179,8 @@ class FilesystemService {
     AccessCheckResponse accessCheck(UUID fileId, UUID userId) {
         StoredFile file = findFile(fileId);
         boolean allowed = file.ownerId.equals(userId)
-                && file.status == FileStatus.ACTIVE
+                && file.status != FileStatus.INFECTED
+                && file.status != FileStatus.DELETING
                 && !trashItems.existsByResourceIdAndResourceType(file.id, ResourceType.FILE)
                 && !isFolderTrashed(findOwnedFolder(file.ownerId, file.parentFolderId));
         return new AccessCheckResponse(allowed, file.id, file.ownerId, file.storageKey, file.size);
