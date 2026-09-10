@@ -55,7 +55,7 @@ DELETE /uploads/{uploadSessionId}              → 204 abort, release quota, Abo
 **Lưu ý quan trọng khác biệt so với v1.0**: không còn field `checksum` trong request `POST /uploads` hay `.../complete`. Checksum không còn là input bắt buộc từ client — nó được `virus-scan-service` tính ra và ghi nhận sau (xem file 01-architecture mục 5.1). Client có thể vẫn gửi optional `clientChecksumHint` để hệ thống log cảnh báo lệch, nhưng đây không phải hợp đồng bắt buộc.
 
 ## 5. Download/Archive APIs (`download-service`)
-- `POST /downloads/files/{id}/url`: `{shareToken?: string}` → `200 {url, expiresAt, supportsRange:true}`. `409 FILE_NOT_READY` nếu chưa ACTIVE.
+- `GET /downloads/files/{id}/url` → `200 {url, expiresAt, supportsRange:true}`. Download Service gọi Filesystem Service để access-check và lấy `storageKey`, tên gốc, MIME type trước khi ký URL MinIO với `Content-Type` và `Content-Disposition`. `409 FILE_NOT_READY` nếu chưa ACTIVE.
 - `POST /downloads/folders/{id}/zip-jobs` → `202 {jobId, status:"PENDING"}`
 - `GET /zip-jobs/{id}` → `{id, status, resultExpiresAt?, errorMessage?}`
 - `POST /zip-jobs/{id}/download-url` → `200 {url, expiresAt}` nếu READY

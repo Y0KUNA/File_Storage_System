@@ -7,7 +7,8 @@ public record AccessCheckResponse(
         UUID fileId,
         UUID ownerId,
         String storageKey,
+        String name,
+        String mimeType,
         long size
 ) {
 }
-

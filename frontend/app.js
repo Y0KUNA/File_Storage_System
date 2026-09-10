@@ -335,7 +335,7 @@ function putObject(url, file, transfer) {
 }
 
 async function downloadFile(fileId) {
-  const result = await api(`/downloads/files/${fileId}/url`, { method: "POST", body: "{}" });
+  const result = await api(`/downloads/files/${fileId}/url`);
   window.open(result.url, "_blank", "noopener");
 }
 

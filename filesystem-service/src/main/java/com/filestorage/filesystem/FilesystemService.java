@@ -183,7 +183,14 @@ class FilesystemService {
                 && file.status != FileStatus.DELETING
                 && !trashItems.existsByResourceIdAndResourceType(file.id, ResourceType.FILE)
                 && !isFolderTrashed(findOwnedFolder(file.ownerId, file.parentFolderId));
-        return new AccessCheckResponse(allowed, file.id, file.ownerId, file.storageKey, file.size);
+        return new AccessCheckResponse(
+                allowed,
+                file.id,
+                file.ownerId,
+                file.storageKey,
+                file.name,
+                file.mimeType,
+                file.size);
     }
 
     FolderArchiveResponse archiveManifest(UUID userId, UUID folderId) {

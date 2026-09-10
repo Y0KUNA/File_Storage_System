@@ -47,7 +47,7 @@ class DownloadService {
                 fileId.toString(),
                 null,
                 Map.of("fileId", fileId.toString(), "ownerId", userId.toString(), "viaShare", false)));
-        PresignedGet get = objectStorage.presignGet(access.storageKey());
+        PresignedGet get = objectStorage.presignGet(access.storageKey(), access.name(), access.mimeType());
         return new DownloadUrlResponse(get.url(), get.expiresAt(), true);
     }
 

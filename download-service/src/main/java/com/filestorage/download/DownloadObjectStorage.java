@@ -18,6 +18,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -46,18 +49,39 @@ class DownloadObjectStorage {
     }
 
     PresignedGet presignGet(String storageKey) {
+        return presignGet(storageKey, null, null);
+    }
+
+    PresignedGet presignGet(String storageKey, String name, String mimeType) {
         ensureBucket();
         try {
+            Map<String, String> responseHeaders = name == null
+                    ? Map.of()
+                    : Map.of(
+                            "response-content-type", safeMimeType(mimeType),
+                            "response-content-disposition", contentDisposition(name));
             String url = publicMinio.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
                     .bucket(bucket)
                     .object(storageKey)
                     .method(Method.GET)
                     .expiry(presignExpiryMinutes, TimeUnit.MINUTES)
+                    .extraQueryParams(responseHeaders)
                     .build());
             return new PresignedGet(url, Instant.now().plus(presignExpiryMinutes, ChronoUnit.MINUTES));
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "MINIO_PRESIGN_GET_FAILED", ex);
         }
+    }
+
+    private String safeMimeType(String mimeType) {
+        return mimeType == null || mimeType.isBlank() ? "application/octet-stream" : mimeType;
+    }
+
+    private String contentDisposition(String name) {
+        String safeName = name.replaceAll("[\\r\\n]", "").replace('"', '_');
+        String asciiName = safeName.replaceAll("[^\\x20-\\x7E]", "_");
+        String encodedName = URLEncoder.encode(safeName, StandardCharsets.UTF_8).replace("+", "%20");
+        return "attachment; filename=\"" + asciiName + "\"; filename*=UTF-8''" + encodedName;
     }
 
     void writeZipEntry(ZipOutputStream zip, ArchiveFileItem item) {

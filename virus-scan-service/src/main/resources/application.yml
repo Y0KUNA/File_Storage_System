@@ -16,7 +16,7 @@ app:
   clamav:
     host: ${CLAMAV_HOST:localhost}
     port: ${CLAMAV_PORT:3310}
-    chunk-size: ${CLAMAV_CHUNK_SIZE:8192}
+    chunk-size: ${CLAMAV_CHUNK_SIZE:262144}
 
 spring:
   application:

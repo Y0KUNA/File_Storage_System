@@ -14,7 +14,7 @@ class DownloadController {
         this.service = service;
     }
 
-    @PostMapping("/downloads/files/{id}/url")
+    @GetMapping("/downloads/files/{id}/url")
     DownloadUrlResponse fileUrl(@RequestHeader(Headers.USER_ID) UUID userId, @PathVariable UUID id) {
         System.out.println(">>> CONTROLLER HIT");
         System.out.println(">>> userId = " + userId);
@@ -39,4 +39,3 @@ class DownloadController {
         return service.zipDownloadUrl(id);
     }
 }
-
