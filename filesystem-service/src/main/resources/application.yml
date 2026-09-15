@@ -10,7 +10,7 @@ spring:
   application:
     name: filesystem-service
   datasource:
-    url: ${FILESYSTEM_DATASOURCE_URL:jdbc:postgresql://localhost:5432/filesystem_db}
+    url: ${FILESYSTEM_DATASOURCE_URL:jdbc:postgresql://postgres:5432/filesystem_db}
     username: ${FILESYSTEM_DATASOURCE_USERNAME:filesystem}
     password: ${FILESYSTEM_DATASOURCE_PASSWORD:filesystem}
   jpa:
@@ -18,7 +18,7 @@ spring:
       ddl-auto: update
     open-in-view: false
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
     consumer:
       group-id: filesystem-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -31,7 +31,14 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 management:
+  health:
+    redis:
+      enabled: false
   endpoints:
     web:
       exposure:
         include: health,info,metrics
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE

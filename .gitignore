@@ -1,16 +1,25 @@
-# Compiled class file
+# Build outputs and local Gradle state
+.gradle/
+**/build/
+**/bin/
 *.class
 
-# Log file
+# IDE and editor state
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Logs, JVM crash reports, and temporary files
 *.log
+hs_err_pid*
+replay_pid*
+*.tmp
+*.swp
+*.swo
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+# Packaged or downloaded artifacts
 *.jar
 *.war
 *.nar
@@ -19,6 +28,14 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# OS metadata and local test files
+.DS_Store
+Thumbs.db
+file_test/
+
+# Local frontend dependencies and environment overrides
+node_modules/
+.env
+.env.*
+!.env.example
+

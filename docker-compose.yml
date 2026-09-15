@@ -48,6 +48,8 @@ services:
 
   clamav:
     image: clamav/clamav:1.5
+    volumes:
+      - ./virus-scan-service/src/main/resources/clamd.conf:/etc/clamav/clamd.conf
     ports:
       - "3310:3310"
 
