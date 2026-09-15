@@ -183,6 +183,24 @@ public class FilesystemService {
         ));
     }
 
+    /**
+     * Releases a reservation left by an aborted upload. This intentionally has
+     * different semantics from the virus-scan reject endpoint: cleanup may be
+     * retried after the file was already removed, and it must never remove a
+     * file that has progressed beyond the pending-upload state.
+     */
+    @Transactional
+    public void releasePendingUploadQuota(UUID fileId) {
+        files.findById(fileId).ifPresent(file -> {
+            if (file.status != FileStatus.PENDING_SCAN) {
+                return;
+            }
+
+            releaseQuota(file.ownerId, file.size);
+            files.delete(file);
+        });
+    }
+
    public  AccessCheckResponse accessCheck(UUID fileId, UUID userId) {
         StoredFile file = findFile(fileId);
         boolean allowed = file.ownerId.equals(userId)

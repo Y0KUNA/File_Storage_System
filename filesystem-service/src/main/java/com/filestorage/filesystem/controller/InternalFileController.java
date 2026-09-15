@@ -70,7 +70,7 @@ public class InternalFileController {
     public void releaseQuota(@RequestHeader(Headers.INTERNAL_TOKEN) String token,
                       @RequestBody ReleaseQuotaRequest request) {
         InternalAuth.requireToken(token, internalToken);
-        service.reject(request.fileId(), new RejectFileRequest("UPLOAD_ABORTED", null));
+        service.releasePendingUploadQuota(request.fileId());
     }
 
     @GetMapping("/files/{id}/access-check")
